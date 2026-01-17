@@ -1,6 +1,7 @@
 package com.example.gameworld2.controller;
 
 import com.example.gameworld2.controller.req.FightReq;
+import com.example.gameworld2.controller.req.UseSkillReq;
 import com.example.gameworld2.dao.EnemysMap;
 import com.example.gameworld2.dao.FightsMap;
 import com.example.gameworld2.dao.PlayerSkillShop;
@@ -46,5 +47,10 @@ public class FightController {
     public Fight startFight(@RequestBody FightReq fightReq){
         fightsMap.createFight(fightReq.getPlayerId());
         return fightService.initFight(fightReq.getPlayerId(),fightReq.getEnemyId());
+    }
+
+    @PostMapping("/useskill")
+    public Fight useSkill(@RequestBody UseSkillReq useSkillReq){
+        return fightService.useSkill(useSkillReq);
     }
 }

@@ -45,6 +45,7 @@ public class EnemysMap {
         shanzeiSkill.register(new EnemySkillDefine("斩击", 5, ""));
         shanzeiSkill.register(new EnemySkillDefine("连续斩击", 8, ""));
         shanzeiSkill.register(new EnemySkillDefine("冲撞", 10, ""));
+        shanzeiSkill.register(new EnemySkillDefine("秘技", 20, ""));
 
         shanzei.setEnemySkill(shanzeiSkill);
         enemyHashMap.put(shanzei.getId(), shanzei);
@@ -59,7 +60,8 @@ public class EnemysMap {
         EnemySkill yeshouSkill = new EnemySkill();
         yeshouSkill.register(new EnemySkillDefine("冲撞", 15, ""));
         yeshouSkill.register(new EnemySkillDefine("投石", 20, ""));
-        yeshouSkill.register(new EnemySkillDefine("群攻", 30, ""));
+        yeshouSkill.register(new EnemySkillDefine("群攻", 25, ""));
+        yeshouSkill.register(new EnemySkillDefine("秘技", 35, ""));
 
         yeshou.setEnemySkill(yeshouSkill);
         enemyHashMap.put(yeshou.getId(), yeshou);

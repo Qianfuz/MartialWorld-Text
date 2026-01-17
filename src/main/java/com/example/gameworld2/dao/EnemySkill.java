@@ -15,6 +15,10 @@ public class EnemySkill {
         enemySkillDefineList.add(def);
     }
 
+    public EnemySkillDefine getEnemySkillDefine(Integer index){
+        return enemySkillDefineList.get(index);
+    }
+
 
 
 }

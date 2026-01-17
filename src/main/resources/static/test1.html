@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Game</title>
+    <style>
+        body {
+            margin: 0;
+            background: #0b0b0b;
+            color: #fff;
+            font-family: Arial, "Microsoft YaHei", sans-serif;
+        }
+
+        /* ========== 登录区（右上角） ========== */
+        .login-box {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            padding: 10px;
+            background: #121212;
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 12px;
+            z-index: 30;
+        }
+
+        .login-box input {
+            width: 80px;
+            padding: 6px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,.25);
+            background: rgba(255,255,255,.05);
+            color: #fff;
+            font-size: 12px;
+        }
+
+        .login-box button {
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .login-btn { background: #fff; color: #111; }
+        .logout-btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.3); }
+        .login-state { font-size: 12px; opacity: .8; }
+
+        /* ========== 玩家信息（左上角） ========== */
+        .player-info {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            padding: 10px 14px;
+            background: #121212;
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.6;
+            z-index: 20;
+        }
+
+        /* ========== 技能商店按钮（左下角） ========== */
+        .shop-toggle {
+            position: fixed;
+            bottom: 12px;
+            left: 12px;
+            z-index: 10;
+        }
+
+        button.primary {
+            background: #fff;
+            color: #111;
+            font-weight: 800;
+        }
+
+        button.disabled {
+            background: #555;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
+        /* ========== 技能商店面板 ========== */
+        .shop-panel {
+            position: fixed;
+            left: 12px;
+            bottom: 64px;
+            width: 520px;
+            max-height: 60vh;
+            overflow-y: auto;
+            background: #121212;
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 14px;
+            padding: 12px;
+            display: none;
+            z-index: 10;
+        }
+
+        .skill-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px;
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,.04);
+        }
+
+        .skill-info {
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .skill-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-end;
+        }
+
+        select {
+            padding: 6px;
+            border-radius: 8px;
+        }
+
+        /* ========== 装备槽 ========== */
+        .slots {
+            position: fixed;
+            bottom: 12px;
+            left: 160px;
+            display: none;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .slot {
+            min-width: 110px;
+            padding: 8px;
+            background: #121212;
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        /* ========== 战斗列表 ========== */
+        .enemy-toggle {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 10px 8px;
+            background: #fff;
+            color: #111;
+            border-radius: 10px 0 0 10px;
+            font-weight: 800;
+            cursor: pointer;
+            z-index: 15;
+        }
+
+        .enemy-panel {
+            position: fixed;
+            top: 72px;
+            right: 0;
+            width: 25vw;
+            max-width: 360px;
+            height: calc(100vh - 84px);
+            background: #121212;
+            border-left: 1px solid rgba(255,255,255,.15);
+            padding: 12px;
+            display: none;
+            overflow-y: auto;
+            z-index: 14;
+        }
+
+        .enemy-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,.04);
+        }
+    </style>
+
+    <!-- ===== 仅新增：战斗界面样式（不改原样式） ===== -->
+    <style>
+        .fight-view{
+            position:fixed; inset:0;
+            background:#0b0b0b;
+            display:none;
+            z-index:60;
+        }
+        .fight-player, .fight-enemy{
+            position:fixed;
+            top:12px;
+            padding:10px 14px;
+            background:#121212;
+            border:1px solid rgba(255,255,255,.15);
+            border-radius:12px;
+            font-size:13px;
+            line-height:1.6;
+        }
+        .fight-player{ left:12px; }
+        .fight-enemy{ right:12px; }
+
+        /* 右上角退出按钮：避开登录盒子（你要求“上面要空出登录模块”） */
+        .fight-exit{
+            position:fixed;
+            top:88px;
+            right:12px;
+            z-index:61;
+        }
+
+        .fight-slots{
+            position:fixed;
+            left:50%;
+            transform:translateX(-50%);
+            bottom:150px; /* 比 log 高一个“装备槽高度” */
+            display:flex;
+            gap:8px;
+            z-index:61;
+        }
+        .fight-slot{
+            min-width:92px;
+            padding:6px 8px;
+            background:#121212;
+            border:1px solid rgba(255,255,255,.15);
+            border-radius:8px;
+            text-align:center;
+            font-size:12px;
+            opacity:.95;
+            cursor:pointer;
+            user-select:none;
+        }
+
+        .fight-log{
+            position:fixed;
+            left:50%;
+            transform:translateX(-50%);
+            bottom:60px;
+            width:60%;
+            height:78px;
+            background:#121212;
+            border:1px solid rgba(255,255,255,.15);
+            border-radius:12px;
+            padding:10px;
+            font-size:12px;
+            white-space:pre-wrap;
+            overflow:auto;
+            z-index:61;
+        }
+
+        .fight-bag{
+            position:fixed;
+            right:12px;
+            bottom:60px; /* 与 log 持平 */
+            z-index:61;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 登录 -->
+<div class="login-box">
+    <input id="pid" placeholder="ID">
+    <input id="pname" placeholder="名称">
+    <button class="login-btn" id="loginBtn">登录</button>
+    <button class="logout-btn" id="logoutBtn">退出</button>
+    <span class="login-state" id="loginState">未登录</span>
+</div>
+
+<div class="player-info" id="playerInfo">未登录</div>
+
+<div class="shop-toggle">
+    <button class="primary" id="toggleShopBtn">技能商店</button>
+</div>
+
+<div class="shop-panel" id="shopPanel"></div>
+<div class="slots" id="slots"></div>
+
+<div class="enemy-toggle" id="toggleEnemyBtn">战斗列表</div>
+<div class="enemy-panel" id="enemyPanel"></div>
+
+<!-- ===== 仅新增：战斗界面 DOM（不影响原页面） ===== -->
+<div class="fight-view" id="fightView">
+    <div class="fight-player" id="fightPlayer">玩家信息</div>
+    <div class="fight-enemy" id="fightEnemy">敌人信息</div>
+
+    <div class="fight-exit">
+        <button class="primary" id="exitFightBtn">退出战斗</button>
+    </div>
+
+    <div class="fight-slots" id="fightSlots"></div>
+    <div class="fight-log" id="fightLog"></div>
+
+    <div class="fight-bag">
+        <button class="logout-btn" id="bagBtn">背包</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const API = {
+        register: "/register",
+        shop: "/skillshop",
+        learn: "/learnskill",
+        equip: "/equipskill",
+        enemies: "/enemylist"
+    };
+
+    let player = JSON.parse(localStorage.getItem("player"));
+    let skillNameMap = {};
+    const el = id => document.getElementById(id);
+
+    function renderLoginState() {
+        el("loginState").textContent = player ? "已登录" : "未登录";
+    }
+
+    function renderPlayer() {
+        el("playerInfo").innerHTML = player
+            ? `ID:${player.id}<br>名字:${player.name}<br>等级:${player.lv}<br>金钱:${player.money}`
+            : "未登录";
+    }
+
+    function renderSlots() {
+        const box = el("slots");
+        box.innerHTML = "";
+        player.playerSkill.slots.forEach(s =>
+            box.innerHTML += `<div class="slot">${s ? (skillNameMap[s] || s) : "空"}</div>`
+        );
+    }
+
+    async function openShop() {
+        const res = await axios.get(API.shop);
+        const owned = new Set(player.playerSkill.owned);
+        const panel = el("shopPanel");
+        panel.innerHTML = "";
+        skillNameMap = {};
+
+        res.data.forEach(s => {
+            skillNameMap[s.id] = s.name;
+            const learned = owned.has(s.id);
+
+            const row = document.createElement("div");
+            row.className = "skill-row";
+            row.innerHTML = `
+            <div class="skill-info">
+                <b>${s.name}</b><br>
+                等级限制:${s.lvLimited}<br>
+                金钱:${s.moneyCost}<br>
+                伤害:${s.hp}<br>
+                蓝耗:${s.mpCost}
+            </div>
+            <div class="skill-actions">
+                <button class="${learned ? "disabled" : "primary"}" ${learned ? "disabled" : ""}>${learned ? "已学习" : "学习"}</button>
+                <select>
+                    <option value="">槽位</option>
+                    <option>1</option><option>2</option><option>3</option>
+                    <option>4</option><option>5</option>
+                </select>
+                <button class="primary disabled">装备</button>
+            </div>
+        `;
+
+            const [learnBtn, select, equipBtn] = row.querySelectorAll("button,select");
+
+            if (!learned) {
+                learnBtn.onclick = async () => {
+                    const r = await axios.post(API.learn, { playerId: player.id, skillId: s.id });
+                    player = r.data;
+                    localStorage.setItem("player", JSON.stringify(player));
+                    openShop(); renderPlayer(); renderSlots();
+                };
+            }
+
+            select.onchange = () =>
+                equipBtn.classList.toggle("disabled", !owned.has(s.id) || !select.value);
+
+            equipBtn.onclick = async () => {
+                if (equipBtn.classList.contains("disabled")) return;
+                const r = await axios.post(API.equip, { playerId: player.id, skillId: s.id, index: Number(select.value) });
+                player = r.data;
+                localStorage.setItem("player", JSON.stringify(player));
+                renderSlots();
+            };
+
+            panel.appendChild(row);
+        });
+    }
+
+    el("toggleShopBtn").onclick = async () => {
+        if (!player) return;
+        const show = el("shopPanel").style.display !== "block";
+        el("shopPanel").style.display = show ? "block" : "none";
+        el("slots").style.display = show ? "flex" : "none";
+        if (show) await openShop();
+    };
+
+    el("toggleEnemyBtn").onclick = async () => {
+        const panel = el("enemyPanel");
+        panel.style.display = panel.style.display === "block" ? "none" : "block";
+        if (panel.style.display === "block") {
+            const res = await axios.get(API.enemies);
+            panel.innerHTML = res.data.map(e =>
+                `<div class="enemy-row">${e.name} Lv.${e.lv}<button class="disabled">战斗</button></div>`
+            ).join("");
+        }
+    };
+
+    el("loginBtn").onclick = async () => {
+        const id = Number(el("pid").value.trim());
+        const name = el("pname").value.trim();
+        if (!Number.isInteger(id) || !name) return;
+        const res = await axios.post(API.register, { id, name });
+        player = res.data;
+        localStorage.setItem("player", JSON.stringify(player));
+        renderPlayer(); renderLoginState();
+    };
+
+    el("logoutBtn").onclick = () => {
+        localStorage.removeItem("player");
+        player = null;
+        renderPlayer(); renderLoginState();
+        el("shopPanel").style.display = "none";
+        el("slots").style.display = "none";
+    };
+
+    renderPlayer();
+    renderLoginState();
+    if (player) renderSlots();
+</script>
+
+<!-- ===== 仅新增：战斗功能脚本（不改原脚本） ===== -->
+<script>
+    // 新增 API（只加字段，不动原字段）
+    API.fight = "/fight";
+    API.useSkill = "/useskill";
+
+    let enemiesCache = []; // 保存 enemylist，用于战斗界面展示 maxHP/lv/id
+    let curEnemy = null;   // 当前战斗敌人对象
+    let curFight = null;   // 当前 Fight 快照
+
+    function safeSkillName(skillId){
+        if(!skillId) return "空";
+        return skillNameMap[skillId] || skillId;
+    }
+
+    // 尽量保证 skillNameMap 有值（如果没打开过商店，就在开战前拉一次 skillshop）
+    async function ensureSkillNameMap(){
+        if (skillNameMap && Object.keys(skillNameMap).length > 0) return;
+        try{
+            const res = await axios.get(API.shop);
+            (res.data || []).forEach(s => { skillNameMap[s.id] = s.name; });
+        }catch(e){
+            // 拉不到也没关系，回退显示 id
+            console.warn("ensureSkillNameMap failed:", e);
+        }
+    }
+
+    function renderFightUI(){
+        if(!player || !curEnemy || !curFight) return;
+
+        // 左上：玩家 id lv curhp/hp curmp/mp
+        el("fightPlayer").innerHTML =
+            `玩家ID:${player.id}<br>` +
+            `Lv:${player.lv}<br>` +
+            `HP:${curFight.curPlayerHp} / ${player.hp}<br>` +
+            `MP:${curFight.curPlayerMp} / ${player.mp}`;
+
+        // 右上：敌人 id lv curhp/hp
+        el("fightEnemy").innerHTML =
+            `敌人ID:${curEnemy.id}<br>` +
+            `Lv:${curEnemy.lv}<br>` +
+            `HP:${curFight.curEnemyHp} / ${curEnemy.hp}`;
+
+        // 中下：装备槽（显示技能名，不绑定其它事件）
+        const slots = (player && player.playerSkill && Array.isArray(player.playerSkill.slots))
+            ? player.playerSkill.slots : [];
+
+        el("fightSlots").innerHTML = slots.map((sid, idx) => {
+            const name = safeSkillName(sid);
+            // 关键：给每个槽加 data-skill-id，后面点击就用这个调用 /useskill
+            // 空槽 data-skill-id=""，点击无效
+            return `<div class="fight-slot" data-skill-id="${sid ? sid : ""}" data-slot-index="${idx+1}">${name}</div>`;
+        }).join("");
+
+        // log：直接展示所有 log（你要求）
+        const logs = Array.isArray(curFight.log) ? curFight.log : [];
+        el("fightLog").textContent = logs.length ? logs.join("\n") : "";
+
+        // 退出按钮：你之前的规则（某个curhp!=0时禁止点击）——我按“双方都活着就禁用”
+        el("exitFightBtn").disabled = (curFight.curEnemyHp !== 0 && curFight.curPlayerHp !== 0);
+
+        // 展示战斗层
+        el("fightView").style.display = "block";
+    }
+
+    function checkWinLose(){
+        if(!curFight) return;
+        if(curFight.curEnemyHp === 0){
+            alert("你胜利了");
+        }
+        if(curFight.curPlayerHp === 0){
+            alert("你失败了");
+        }
+    }
+
+    // 退出战斗按钮：只有可点击时才关闭
+    el("exitFightBtn").addEventListener("click", () => {
+        if (el("exitFightBtn").disabled) return;
+        el("fightView").style.display = "none";
+    });
+
+    // 背包按钮：不绑定事件（按你要求）
+    // el("bagBtn") 已存在，但不做任何事
+
+    // ====== 不改你原 toggleEnemyBtn 的代码逻辑：直接“覆盖点击行为”（运行时覆盖）======
+    // 你原来按钮渲染的是 disabled 战斗按钮，所以必须在“新增脚本”里把它改成可点 + 带 enemyId
+    el("toggleEnemyBtn").onclick = async () => {
+        const panel = el("enemyPanel");
+        panel.style.display = panel.style.display === "block" ? "none" : "block";
+        if (panel.style.display === "block") {
+            const res = await axios.get(API.enemies);
+            enemiesCache = res.data || [];
+            panel.innerHTML = enemiesCache.map(e =>
+                `<div class="enemy-row">
+                    ${e.name} Lv.${e.lv}
+                    <button class="primary" data-enemy-id="${e.id}">战斗</button>
+                 </div>`
+            ).join("");
+        }
+    };
+
+    // 点敌人列表的“战斗” → POST /fight → 打开战斗UI
+    el("enemyPanel").addEventListener("click", async (ev) => {
+        const btn = ev.target;
+        if (!(btn instanceof HTMLButtonElement)) return;
+        const enemyId = btn.getAttribute("data-enemy-id");
+        if (!enemyId) return;
+
+        if (!player) return; // 未登录不做
+
+        // 取敌人对象（用于 max hp / lv）
+        curEnemy = enemiesCache.find(x => x.id === enemyId) || {id: enemyId, lv: 0, hp: 0};
+
+        try{
+            await ensureSkillNameMap(); // 保证技能名映射有机会存在
+
+            const fightRes = await axios.post(API.fight, { playerId: player.id, enemyId: enemyId });
+            curFight = fightRes.data;
+
+            // 清空旧 log 区域先显示当前
+            renderFightUI();
+            checkWinLose();
+        }catch(e){
+            console.error("start fight failed:", e);
+        }
+    });
+
+    // ===== 核心：只在“技能按钮（fight-slot）”上绑定事件 =====
+    // 点装备槽 → 如果空就不做；否则 POST /useskill
+    el("fightSlots").addEventListener("click", async (ev) => {
+        const target = ev.target;
+        if (!(target instanceof HTMLElement)) return;
+        if (!target.classList.contains("fight-slot")) return;
+
+        const skillId = target.getAttribute("data-skill-id");
+        if (!skillId) return; // 空槽
+
+        if (!player || !curEnemy) return;
+
+        try{
+            const res = await axios.post(API.useSkill, {
+                playerId: player.id,
+                skillId: skillId,
+                enemyId: curEnemy.id
+            });
+            curFight = res.data;
+
+            // 每次返回：展示log + 检查胜负
+            renderFightUI();
+            checkWinLose();
+        }catch(e){
+            console.error("useSkill failed:", e);
+        }
+    });
+</script>
+
+</body>
+</html>
