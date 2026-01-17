@@ -74,6 +74,11 @@ public class FightService {
                 .append("使用 ").append("[").append(enemySkillDefine.getName()).append("] ")
                 .append("造成了 ").append(enemySkillDefine.getHp()).append(" 点 伤害").append("\n");
         f.getLog().add(sb.toString());
+
+        if(f.getCurPlayerHp()<=0){
+            f.setCurPlayerHp(0);
+        }
+
         return f;
     }
 
