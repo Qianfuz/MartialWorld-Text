@@ -8,6 +8,7 @@ import com.example.gameworld2.dao.PlayerSkillShop;
 import com.example.gameworld2.dao.PlayersMap;
 import com.example.gameworld2.model.Enemy;
 import com.example.gameworld2.model.Fight;
+import com.example.gameworld2.model.Player;
 import com.example.gameworld2.service.FightService;
 import com.example.gameworld2.service.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,5 +53,10 @@ public class FightController {
     @PostMapping("/useskill")
     public Fight useSkill(@RequestBody UseSkillReq useSkillReq){
         return fightService.useSkill(useSkillReq);
+    }
+
+    @PostMapping("/reward")
+    public Player fightReward(@RequestBody FightReq fightReq){
+        return fightService.fightReward(fightReq);
     }
 }

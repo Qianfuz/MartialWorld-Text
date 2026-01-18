@@ -43,8 +43,28 @@ public class FightService {
         return f;
     }
 
+    public Player fightReward(FightReq fightReq){
+        Player p = playersMap.getPlayer(fightReq.getPlayerId());
+        Enemy e = enemysMap.getEnemy(fightReq.getEnemyId());
+        StringBuilder sb = new StringBuilder();
+        p.setExp(p.getExp()+e.getLv()*10);
+        p.setMoney(p.getMoney()+e.getLv()*13);
+        sb.append("你 击败[").append(e.getName()).append("] 获得了 经验 ").
+                append(e.getLv()*10).append(" 金币 ").append(e.getLv()*13).append("\n");
+        while(p.getExp()>=p.getExpMax()){
+            p.setExp(p.getExp()-p.getExpMax());
+            p.setLv(p.getLv()+1);
+            p.setExpMax(p.getExpMax()*11/10);
+            p.setMp(p.getMp()+50);
+            p.setHp(p.getHp()+40);
+            p.setMoney(p.getMoney()+500);
+            sb.append("你升级了!");
+        }
+        p.getLog().add(sb.toString());
+        return p;
+    }
+
     public Fight useSkill(UseSkillReq useSkillReq){
-        //Player p = playersMap.getPlayer(useSkillReq.getPlayerId());
         StringBuilder sb = new StringBuilder();
         Fight f = fightsMap.createFight(useSkillReq.getPlayerId());
         Enemy e = enemysMap.getEnemy(useSkillReq.getEnemyId());

@@ -63,6 +63,25 @@
             z-index: 20;
         }
 
+        /* ===== 仅新增：玩家log展示区（放在玩家信息下方，宽2.5倍，高度固定） ===== */
+        .player-mini-log { /* <-- */
+            position: fixed;
+            left: 12px;
+            top: 143px;              /* 在 player-info 下方一点点 */
+            width: 520px;            /* 约 2.5 倍（你也可按你屏幕微调） */
+            height: 56px;            /* “很小”，高度固定 */
+            padding: 8px 12px;
+            background: #121212;
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 12px;
+            font-size: 12px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            overflow: auto;
+            z-index: 19;
+            opacity: .92;
+        } /* <-- */
+
         /* ========== 技能商店按钮（左下角） ========== */
         .shop-toggle {
             position: fixed;
@@ -278,6 +297,9 @@
 
 <div class="player-info" id="playerInfo">未登录</div>
 
+<!-- ===== 仅新增：玩家log展示区（就在玩家信息下面） ===== -->
+<div class="player-mini-log" id="playerMiniLog">log: 空</div> <!-- <-- -->
+
 <div class="shop-toggle">
     <button class="primary" id="toggleShopBtn">技能商店</button>
 </div>
@@ -325,9 +347,23 @@
 
     function renderPlayer() {
         el("playerInfo").innerHTML = player
-            ? `ID:${player.id}<br>名字:${player.name}<br>等级:${player.lv}<br>金钱:${player.money}`
+            ? `ID:${player.id}<br>名字:${player.name}<br>等级:${player.lv}<br>经验:${player.exp} / ${player.expMax}<br>金钱:${player.money}`
             : "未登录";
     }
+
+
+    // ===== 仅新增：刷新左上角小log =====
+    function renderPlayerMiniLog(){ // <--
+        const box = el("playerMiniLog");
+        if (!box) return;
+        if (!player) { box.textContent = "log: 空"; return; }
+
+        const logs = Array.isArray(player.log) ? player.log : [];
+        if (logs.length === 0) { box.textContent = "log: 空"; return; }
+
+        // 只显示最后 6 条，避免撑爆（你要“小”）
+        box.textContent = logs.slice(-6).join("\n");
+    } // <--
 
     function renderSlots() {
         const box = el("slots");
@@ -377,6 +413,7 @@
                     player = r.data;
                     localStorage.setItem("player", JSON.stringify(player));
                     openShop(); renderPlayer(); renderSlots();
+                    renderPlayerMiniLog(); // <--
                 };
             }
 
@@ -389,6 +426,7 @@
                 player = r.data;
                 localStorage.setItem("player", JSON.stringify(player));
                 renderSlots();
+                renderPlayerMiniLog(); // <--
             };
 
             panel.appendChild(row);
@@ -422,6 +460,7 @@
         player = res.data;
         localStorage.setItem("player", JSON.stringify(player));
         renderPlayer(); renderLoginState();
+        renderPlayerMiniLog(); // <--
     };
 
     el("logoutBtn").onclick = () => {
@@ -430,11 +469,13 @@
         renderPlayer(); renderLoginState();
         el("shopPanel").style.display = "none";
         el("slots").style.display = "none";
+        renderPlayerMiniLog(); // <--
     };
 
     renderPlayer();
     renderLoginState();
     if (player) renderSlots();
+    renderPlayerMiniLog(); // <--
 </script>
 
 <!-- ===== 仅新增：战斗功能脚本（不改原脚本） ===== -->
@@ -506,6 +547,20 @@
         if(!curFight) return;
         if(curFight.curEnemyHp === 0){
             alert("你胜利了");
+
+            // <-- 在这里插入：胜利结算 reward
+            axios.post("/reward", {
+                playerId: player.id,
+                enemyId: curEnemy.id
+            }).then(res => {
+                player = res.data;
+                localStorage.setItem("player", JSON.stringify(player));
+                renderPlayer(); // 刷新左上角玩家信息
+                renderPlayerMiniLog(); // <--
+            }).catch(err => {
+                console.error("reward failed:", err);
+            });
+            // <-- 插入结束
         }
         if(curFight.curPlayerHp === 0){
             alert("你失败了");
