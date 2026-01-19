@@ -17,7 +17,6 @@ public class PlayerSkillShop {
     public PlayerSkillDefine getSkillDefine(String id) {
         return map.get(id);
     }
-
     public Collection<PlayerSkillDefine> listAll() {
         return map.values();
     }
@@ -29,7 +28,9 @@ public class PlayerSkillShop {
         register(new PlayerSkillDefine(
                 "nianlifeishan",
                 "念力飞扇",
-                26,
+                0,
+                1000,
+                25,
                 15,
                 SkillType.GENERAL,
                 "",
@@ -41,6 +42,8 @@ public class PlayerSkillShop {
         register(new PlayerSkillDefine(
                 "baibuliehuo",
                 "百步烈火",
+                0,
+                2000,
                 100,
                 20,
                 SkillType.SPECIAL,
@@ -53,8 +56,10 @@ public class PlayerSkillShop {
         register(new PlayerSkillDefine(
                 "jingtianhunyuanzhang",
                 "惊天浑元掌",
-                80,
                 0,
+                1500,
+                80,
+                15,
                 SkillType.LIMITED,
                 "",
                 0,
@@ -65,6 +70,8 @@ public class PlayerSkillShop {
         register(new PlayerSkillDefine(
                 "jinzhongzhao",
                 "金钟罩",
+                0,
+                500,
                 0,
                 0,
                 SkillType.PASSIVE,

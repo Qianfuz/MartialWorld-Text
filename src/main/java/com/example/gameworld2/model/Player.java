@@ -20,8 +20,8 @@ public class Player {
     private Integer hp=50;
     private Integer mp=100;
     private Integer exp=1;
-    private Integer expMax=500;
-    private Integer money=500;
+    private Integer expMax=300;
+    private Integer money=50000;
     private List<String>log=new ArrayList<>();
     private Bag bag = new Bag();
     private PlayerSkill playerSkill = new PlayerSkill();

@@ -1,7 +1,7 @@
 package com.example.gameworld2.controller;
 
 import com.example.gameworld2.controller.req.EquipSkillReq;
-import com.example.gameworld2.controller.req.LearnSkillReq;
+import com.example.gameworld2.controller.req.UpgradeSkillReq;
 import com.example.gameworld2.dao.PlayersMap;
 import com.example.gameworld2.dao.PlayerSkillShop;
 import com.example.gameworld2.model.Player;
@@ -26,9 +26,9 @@ public class SkillController {
     }
 
 
-    @PostMapping("/learnskill")
-    public Player learnskill(@RequestBody LearnSkillReq learnSkillReq){
-        return skillService.learnSkill(learnSkillReq.getSkillId(), learnSkillReq.getPlayerId());
+    @PostMapping("/upgradeskill")
+    public Player upgradeSkill(@RequestBody UpgradeSkillReq learnSkillReq){
+        return skillService.upgradeSkill(learnSkillReq.getSkillId(), learnSkillReq.getPlayerId());
     }
     @GetMapping("/skillshop")
     public Collection<PlayerSkillDefine> showShop(){

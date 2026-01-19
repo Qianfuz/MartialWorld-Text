@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 public class PlayerSkillDefine {
     private String id;
     private String name;
+    private Integer lv;
+    private Integer upgradeCost;
     private Integer hp;
     private Integer mpCost;
     private SkillType type;
