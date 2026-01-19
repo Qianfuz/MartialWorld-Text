@@ -22,13 +22,15 @@ public class SkillService {
     public Player upgradeSkill(String skillId,Integer id){
         PlayerSkillDefine define = skillShop.getSkillDefine(skillId);
         Player p = playersMap.getPlayer(id);
-        if(p.getSkillLvMap().get(skillId)==0 && p.getLv()>=define.getLvLimited() && p.getMoney()>=define.getMoneyCost()){
-            p.getSkillLvMap().put(skillId,1);
-            p.setMoney(p.getMoney()-define.getMoneyCost());
-            p.getPlayerSkill().learnSkill1(skillId);
+        if(p.getSkillLvMap().get(skillId)==0){
+            if(p.getLv()>=define.getLvLimited() && p.getMoney()>=define.getMoneyCost()){
+                p.getSkillLvMap().put(skillId,1);
+                p.setMoney(p.getMoney()-define.getMoneyCost());
+                p.getPlayerSkill().learnSkill1(skillId);
+            }
         } else {
-            if(p.getMoney()>=(define.getMpCost()+p.getSkillLvMap().get(skillId)*1500)){
-                p.setMoney(p.getMoney()-define.getMpCost()-p.getSkillLvMap().get(skillId)*1500);
+            if(p.getMoney()>=(define.getMoneyCost()+p.getSkillLvMap().get(skillId)*1500)){
+                p.setMoney(p.getMoney()-define.getMoneyCost()-p.getSkillLvMap().get(skillId)*1500);
                 p.getSkillLvMap().put(skillId,p.getSkillLvMap().get(skillId)+1);
             }
         }
