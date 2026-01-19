@@ -28,8 +28,6 @@ public class PlayerSkillShop {
         register(new PlayerSkillDefine(
                 "nianlifeishan",
                 "念力飞扇",
-                0,
-                1000,
                 25,
                 15,
                 SkillType.GENERAL,
@@ -42,8 +40,6 @@ public class PlayerSkillShop {
         register(new PlayerSkillDefine(
                 "baibuliehuo",
                 "百步烈火",
-                0,
-                2000,
                 100,
                 20,
                 SkillType.SPECIAL,
@@ -56,8 +52,6 @@ public class PlayerSkillShop {
         register(new PlayerSkillDefine(
                 "jingtianhunyuanzhang",
                 "惊天浑元掌",
-                0,
-                1500,
                 80,
                 15,
                 SkillType.LIMITED,
@@ -70,8 +64,6 @@ public class PlayerSkillShop {
         register(new PlayerSkillDefine(
                 "jinzhongzhao",
                 "金钟罩",
-                0,
-                500,
                 0,
                 0,
                 SkillType.PASSIVE,

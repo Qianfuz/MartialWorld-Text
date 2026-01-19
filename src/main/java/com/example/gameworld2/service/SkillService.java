@@ -18,28 +18,23 @@ public class SkillService {
         this.skillShop=skillShop;
         this.playersMap=playersMap;
     }
-
+//
     public Player upgradeSkill(String skillId,Integer id){
         PlayerSkillDefine define = skillShop.getSkillDefine(skillId);
         Player p = playersMap.getPlayer(id);
-        if(define.getLv()==0){
-            if(p.getLv()>=define.getLvLimited() && p.getMoney()>=define.getMoneyCost()){
-                p.setMoney(p.getMoney()-define.getMoneyCost());
-                p.getPlayerSkill().learnSkill1(skillId);
-                define.setLv(define.getLv()+1);
-            }
+        if(p.getSkillLvMap().get(skillId)==0 && p.getLv()>=define.getLvLimited() && p.getMoney()>=define.getMoneyCost()){
+            p.getSkillLvMap().put(skillId,1);
+            p.setMoney(p.getMoney()-define.getMoneyCost());
+            p.getPlayerSkill().learnSkill1(skillId);
         } else {
-            if(p.getMoney()>=define.getUpgradeCost()){
-                p.setMoney(p.getMoney()-define.getUpgradeCost());
-                define.setLv(define.getLv()+1);
-                define.setHp(define.getHp()*23/20);
-                define.setMpCost(define.getMpCost()*23/20);
-                define.setUpgradeCost(define.getUpgradeCost()+1000);
+            if(p.getMoney()>=(define.getMpCost()+p.getSkillLvMap().get(skillId)*1500)){
+                p.setMoney(p.getMoney()-define.getMpCost()-p.getSkillLvMap().get(skillId)*1500);
+                p.getSkillLvMap().put(skillId,p.getSkillLvMap().get(skillId)+1);
             }
         }
         return p;
     }
-
+//
     public Player equipSkill(String skillId,Integer id,Integer index){
         Player p = playersMap.getPlayer(id);
         if(p.getPlayerSkill().getOwned().contains(skillId)){
@@ -47,8 +42,4 @@ public class SkillService {
         }
         return p;
     }
-
-
-
-
 }

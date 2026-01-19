@@ -27,8 +27,8 @@ public class SkillController {
 
 
     @PostMapping("/upgradeskill")
-    public Player upgradeSkill(@RequestBody UpgradeSkillReq learnSkillReq){
-        return skillService.upgradeSkill(learnSkillReq.getSkillId(), learnSkillReq.getPlayerId());
+    public Player upgradeSkill(@RequestBody UpgradeSkillReq upgradeSkillReq){
+        return skillService.upgradeSkill(upgradeSkillReq.getSkillId(), upgradeSkillReq.getPlayerId());
     }
     @GetMapping("/skillshop")
     public Collection<PlayerSkillDefine> showShop(){

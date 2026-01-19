@@ -19,6 +19,11 @@ public class PlayersMap {
             playersMap.put(id,new Player());
             playersMap.get(id).setName(name);
             playersMap.get(id).setId(id);
+            Player p = playersMap.get(id);
+                p.register("nianlifeishan");
+                p.register("baibuliehuo");
+                p.register("jingtianhunyuanzhang");
+                p.register("jinzhongzhao");
 
         }
     }

@@ -69,15 +69,19 @@ public class FightService {
         Fight f = fightsMap.createFight(useSkillReq.getPlayerId());
         Enemy e = enemysMap.getEnemy(useSkillReq.getEnemyId());
         PlayerSkillDefine playerSkillDefine=playerSkillShop.getSkillDefine(useSkillReq.getSkillId());
+        //
+        Integer lv = playersMap.getPlayer(useSkillReq.getPlayerId()).getSkillLvMap().get(useSkillReq.getSkillId());
+        Integer add = lv*15-15+100;
 
-        if(f.getCurPlayerMp()-playerSkillDefine.getMpCost()>=0){
-            f.setCurPlayerMp(f.getCurPlayerMp()-playerSkillDefine.getMpCost());
+        //
+        if(f.getCurPlayerMp()-(playerSkillDefine.getMpCost()*add/100)>=0){
+            f.setCurPlayerMp(f.getCurPlayerMp()-playerSkillDefine.getMpCost()*add/100);
         }else{
             return f;
         }
-        f.setCurEnemyHp(f.getCurEnemyHp()-playerSkillDefine.getHp());
+        f.setCurEnemyHp(f.getCurEnemyHp()-playerSkillDefine.getHp()*add/100);
         sb.append("你 使用 ").append("[").append(playerSkillDefine.getName()).append("] ")
-                .append("造成了 ").append(playerSkillDefine.getHp()).append(" 点 伤害")
+                .append("造成了 ").append(playerSkillDefine.getHp()*add/100).append(" 点 伤害")
                 .append("\n");
         if(f.getCurEnemyHp()<=0){
             f.setCurEnemyHp(0);
